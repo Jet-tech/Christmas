@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #001f3f; /* Dark blue background for night sky */
+      font-family: 'Arial', sans-serif;
+    }
+
+    button {
+      position: absolute;
+      bottom: 30px; /* Adjusted position */
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      color: #fff; /* White text color */
+    }
+
+    #snowfallButton {
+      left: 10px;
+      background-color: #ff0000; /* Christmas red color for Snowfall button */
+    }
+
+    #jingleBellButton {
+      left: 180px; /* Adjusted position */
+      background-color: #0066cc; /* Christmas blue color for Jingle Bell button */
+    }
+
+    #yourMessageButton {
+      right: 10px; /* Adjusted position */
+      background-color: #ff0000; /* Christmas red color for Your Message button */
+    }
+
+    #nextButton {
+      right: 180px; /* Adjusted position */
+      top: 450px;
+      bottom: 250px;
+      background-color: #0066cc; /* Christmas blue color for Next button */
+    }
+
+    #anotherVerseButton {
+      right: 10px; /* Adjusted position */
+      top: 450px;
+      bottom: 250px;
+      background-color: #0066cc; /* Christmas blue color for Another Verse button */
+      display: none; /* Initially hidden */
+    }
+
+    .snowflake {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      user-select: none;
+      transform-origin: center;
+      animation: snowfall linear infinite;
+    }
+
+    @keyframes snowfall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7); /* Semi-transparent black background for overlay */
+      backdrop-filter: blur(5px); /* Apply a blur effect to the background */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeInContent 0.5s ease-in-out forwards 0.5s;
+    }
+
+    @keyframes fadeInContent {
+      to {
+        opacity: 1;
+      }
+    }
+
+    #stopMusicButton {
+      background-color: #0066cc; /* Christmas blue color for Stop Music button */
+      margin-top: 100px;
+      right: 11px; /* Added space between buttons */
+      padding: 10px;
+      font-size: 16px;
+      color: #fff; /* White text color */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #closeButton {
+      background-color: #0066cc; /* Christmas blue color for Close button */
+      margin-top: 10px;
+      left: 10px;
+      padding: 10px;
+      font-size: 16px;
+      color: #fff; /* White text color */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #nextButton,
+    #anotherVerseButton {
+      background-color: #0066cc; /* Christmas blue color for buttons */
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      color: #fff; /* White text color */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  
+.night-sky-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff; /* White text color */
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  font-size: 36px; /* Adjust font size */
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add text shadow for emphasis */
+  z-index: 2; /* Ensure it's above other elements */
+}
+
+.night-sky-message h1 {
+  margin-bottom: 10px; /* Add some spacing below the h1 */
+}
+
+
+
+
+
+  </style>
+  <title>Interactive Christmas Greeting</title>
+</head>
+<body>
+
+  <button id="snowfallButton" onclick="startSnowfall()">Snowfall Showers</button>
+  <button id="jingleBellButton" onclick="playJingleBells()">Jingle Bell</button>
+  <button id="yourMessageButton" onclick="showYourMessage()" style="display: none;">Message</button>
+
+  <div class="modal-overlay" id="messageModal">
+    <div class="modal-content" id="messageContent">
+      <!-- Content will be dynamically added here -->
+    </div>
+    <button id="stopMusicButton" onclick="stopJingleBells()">Stop Music</button>
+    <button id="closeButton" onclick="closeMessageModal()">Close</button>
+    <button id="nextButton" onclick="showBibleVerse()">Next</button>
+    <button id="anotherVerseButton" onclick="showAnotherVerse()">Another Verse</button>
+  </div>
+
+  <audio id="jingleBellsAudio" src="jingle_bells.mp3"></audio>
+
+  <script>
+function startSnowfall() {
+  // Create snowfall elements
+  for (let i = 0; i < 20; i++) {
+    let snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    document.body.appendChild(snowflake);
+
+    // Set initial position and animation
+    snowflake.style.left = Math.random() * window.innerWidth + "px";
+    snowflake.style.animationDuration = Math.random() * 3 + 2 + "s";
+    snowflake.style.opacity = Math.random();
+
+    // Remove snowflake element after animation completes
+    snowflake.addEventListener("animationend", function () {
+      snowflake.remove();
+    });
+  }
+
+  // Show the second button after the snowfall
+  document.getElementById("jingleBellButton").style.display = "block";
+
+  // Delay displaying the text for 3 seconds (adjust as needed)
+  setTimeout(() => {
+    // Display the text "Merry Christmas" after the tree fades out
+    document.getElementById("yourMessageButton").style.display = "block";
+  }, 3000);
+}
+
+    function playJingleBells() {
+      // Get the audio element
+      const jingleBellsAudio = document.getElementById("jingleBellsAudio");
+
+      // Play the audio
+      jingleBellsAudio.play();
+
+      // Show the third button after playing Jingle Bells
+      document.getElementById("yourMessageButton").style.display = "block";
+    }
+
+    function stopJingleBells() {
+      // Get the audio element
+      const jingleBellsAudio = document.getElementById("jingleBellsAudio");
+
+      // Pause the audio
+      jingleBellsAudio.pause();
+    }
+
+function showYourMessage() {
+  const messages = [
+    "Merry Christmas! 🎄",
+    "Wishing you joy and happiness this holiday season. 🌟",
+    "May your days be merry and bright. ✨",
+    "Sending warm wishes for a wonderful Christmas. 🎅",
+    "Season's Greetings and a Happy New Year! 🎉",
+    "May your heart be light, and your holidays be bright. 🕯️"
+  ];
+
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+  const modalOverlay = document.getElementById("messageModal");
+  const modalContent = document.getElementById("messageContent");
+
+  // Set modal content
+  modalContent.innerHTML = `<p>${randomMessage}</p>`;
+
+  // Hide the night sky message if it exists
+  const nightSkyMessage = document.querySelector(".night-sky-message");
+  if (nightSkyMessage) {
+    nightSkyMessage.remove();
+  }
+
+  // Display the modal
+  modalOverlay.style.display = "flex";
+}
+
+    function showBibleVerse() {
+      const bibleVerses = [
+        "For unto us a child is born, unto us a son is given: and the government shall be upon his shoulder: and his name shall be called Wonderful, Counselor, The mighty God, The everlasting Father, The Prince of Peace. - Isaiah 9:6",
+        "And she shall bring forth a son, and thou shalt call his name JESUS: for he shall save his people from their sins. - Matthew 1:21",
+        "So all this was done that it might be fulfilled which was spoken by the Lord through the prophet, saying:\n" +
+        "\"Behold, the virgin shall be with child, and bear a Son, and they shall call His name Immanuel,\" which is translated, \"God with us.\" - Matthew 1:22-23",
+        "And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth. - John 1:14",
+        "For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life. - John 3:16",
+        "Every good and perfect gift is from above, coming down from the Father of the heavenly lights, who does not change like shifting shadows. - James 1:17",
+        "For He grew up before Him like a young plant, and like a root out of dry ground; He had no form or majesty that we should look at Him, and no beauty that we should desire Him. - Isaiah 53:2-6",
+        "And Mary said:\n" +
+        "\"My soul magnifies the Lord, and my spirit has rejoiced in God my Savior.\" - Luke 1:46-47"
+      ];
+
+      const randomVerse = bibleVerses[Math.floor(Math.random() * bibleVerses.length)];
+
+      const modalOverlay = document.getElementById("messageModal");
+      const modalContent = document.getElementById("messageContent");
+
+      // Set modal content for Bible verse
+      modalContent.innerHTML = `<p>${randomVerse}</p>`;
+
+      // Show the "Another Verse" button after displaying the initial Bible verse
+      document.getElementById("anotherVerseButton").style.display = "block";
+      // Hide the "Next" button after displaying the initial Bible verse
+      document.getElementById("nextButton").style.display = "none";
+
+      // Display the modal
+      modalOverlay.style.display = "flex";
+    }
+
+    function showAnotherVerse() {
+      const additionalVerses = [
+        "Therefore the Lord Himself will give you a sign. Behold, the virgin shall conceive and bear a Son, and shall call His name Immanuel. - Isaiah 7:14",
+        "Behold, the virgin shall be with child, and bear a Son, and they shall call His name Immanuel, which is translated, 'God with us.' - Matthew 1:23",
+        "The Word became flesh and made His dwelling among us. We have seen His glory, the glory of the one and only Son, who came from the Father, full of grace and truth. - John 1:14",
+        "For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life. - John 3:16",
+        "Every good gift and every perfect gift is from above and comes down from the Father of lights, with whom there is no variation or shadow of turning. - James 1:17",
+        "He had no form or comeliness; and when we see Him, there is no beauty that we should desire Him. - Isaiah 53:2-6",
+        "And Mary said:\n" +
+        "\"My soul magnifies the Lord, and my spirit has rejoiced in God my Savior.\" - Luke 1:46-47"
+      ];
+
+      const randomVerse = additionalVerses[Math.floor(Math.random() * additionalVerses.length)];
+
+      const modalOverlay = document.getElementById("messageModal");
+      const modalContent = document.getElementById("messageContent");
+
+      // Set modal content for another Bible verse
+      modalContent.innerHTML = `<p>${randomVerse}</p>`;
+    }
+
+function closeMessageModal() {
+  const modalOverlay = document.getElementById("messageModal");
+  const modalContent = document.getElementById("messageContent");
+
+  // Array of random Christmas messages
+  const randomMessages = [
+    "Wishing you a joyful and bright Christmas season!",
+    "May your days be filled with love, laughter, and warmth!",
+    "Sending you warm wishes for a Merry Christmas and a Happy New Year!",
+    "May the magic of Christmas fill your heart with joy and peace.",
+    "Wishing you and your family a Christmas filled with love and happiness.",
+    "May your home be filled with the joy of the Christmas season.",
+    "Sending you warm holiday greetings and best wishes for the New Year!",
+  ];
+
+  // Choose a random message
+  const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+
+  // Create an element for the night sky message
+  const nightSkyMessage = document.createElement("div");
+  nightSkyMessage.className = "night-sky-message";
+  nightSkyMessage.innerHTML = `<h1>Merry Christmas 🎄</h1><p><strong>${randomMessage}</strong></p>`;
+
+  // Append the night sky message to the body
+  document.body.appendChild(nightSkyMessage);
+
+  // Hide the modal after setting the content
+  modalOverlay.style.display = "none";
+}
+
+  </script>
+</body>
+</html>
